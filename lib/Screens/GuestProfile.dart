@@ -166,6 +166,7 @@ class _GuestProfileState extends State<GuestProfile> {
               //signUpDone("Assignment Task Update Successfully.");
               await prefs.setString(Session.Name, edtName.text);
               await prefs.setString(Session.CompanyName, edtCmpName.text);
+              await prefs.setString(Session.Email, edtEmail.text);
               showHHMsg("Data Updated Successfully");
               setState(() {
                 isEditable = !isEditable;

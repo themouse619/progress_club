@@ -1346,6 +1346,103 @@ class Services {
     }
   }
 
+  //=============by rinki
+  static Future<SaveDataClass> AddGuestEventConfirmation(body) async {
+    print(body.toString());
+    String url = API_URL + 'UpdatePaymentForEvent';
+    print("AddGuestEventConfirmation url : " + url);
+    try {
+      final response = await dio.post(url, data: body);
+      if (response.statusCode == 200) {
+        SaveDataClass saveData = new SaveDataClass(
+            Message: 'No Data', IsSuccess: false, IsRecord: false, Data: null);
+
+        print(
+            "AddGuestEventConfirmation Response: " + response.data.toString());
+        var memberDataClass = response.data;
+
+        saveData.Message = memberDataClass["Message"];
+        saveData.IsSuccess = memberDataClass["IsSuccess"];
+        saveData.IsRecord = memberDataClass["IsRecord"];
+        saveData.Data = memberDataClass["Data"].toString();
+
+        return saveData;
+      } else {
+        print("Error AddGuestEventConfirmation");
+        throw Exception(response.data.toString());
+      }
+    } catch (e) {
+      print("Error AddGuestEventConfirmation ${e.toString()}");
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<SaveDataClass> AddGuestEventRegistrationConfirmation(
+      String MemberID, String EventID) async {
+    // print(body.toString());
+    //String url = cnst.SOAP_API_URL + 'RegisterForEvent';
+    String url =
+        "http://pmc.studyfield.com/Service.asmx/RegisterForEvent?MemberID=$MemberID&EventID=$EventID";
+    print("AddGuestEventRegistrationConfirmation url : " + url);
+    try {
+      final response = await dio.get(url);
+      if (response.statusCode == 200) {
+        SaveDataClass saveData = new SaveDataClass(
+            Message: 'No Data', IsSuccess: false, IsRecord: false, Data: "0");
+
+        var memberDataClass = jsonDecode(response.data);
+        print("AddGuestEventRegistrationConfirmation Response: " +
+            memberDataClass.toString());
+
+        saveData.Message = memberDataClass["MESSAGE"];
+        saveData.IsSuccess = memberDataClass["IsSuccess"];
+        saveData.IsRecord = memberDataClass["IsRecord"];
+        saveData.Data = memberDataClass["Data"];
+
+        return saveData;
+      } else {
+        print("Error AddGuestEventRegistrationConfirmation  ");
+        throw Exception(response.data.toString());
+      }
+    } catch (e) {
+      print("Error AddGuestEventRegistrationConfirmation ${e.toString()}");
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<SaveDataClass> GuestEventPaymentGateWay(String MemberID,
+      String EventID, String TransactionId, String Amount) async {
+    // print(body.toString());
+    //String url = cnst.SOAP_API_URL + 'RegisterForEvent';
+    String url =
+        "http://pmc.studyfield.com/Service.asmx/UpdatePaymentForEvent?MemberID=$MemberID&EventID=$EventID&TransactionId=$TransactionId&Amount=$Amount";
+    print("GuestEventPaymentGateWay url : " + url);
+    try {
+      final response = await dio.get(url);
+      if (response.statusCode == 200) {
+        SaveDataClass saveData = new SaveDataClass(
+            Message: 'No Data', IsSuccess: false, IsRecord: false, Data: "0");
+
+        print("GuestEventPaymentGateWay Response: " + response.data.toString());
+        var memberDataClass = jsonDecode(response.data);
+
+        saveData.Message = memberDataClass["MESSAGE"];
+        saveData.IsSuccess = memberDataClass["IsSuccess"];
+        saveData.IsRecord = memberDataClass["IsRecord"];
+        saveData.Data = memberDataClass["Data"];
+
+        return saveData;
+      } else {
+        print("Error GuestEventPaymentGateWay  ");
+        throw Exception(response.data.toString());
+      }
+    } catch (e) {
+      print("Error GuestEventPaymentGateWay ${e.toString()}");
+      throw Exception(e.toString());
+    }
+  }
+
+//===================
   static Future<SaveDataClass> sendTestimonial(body) async {
     print(body.toString());
     String url = API_URL + 'SaveTestimonial';
@@ -2890,6 +2987,59 @@ class Services {
     }
   }
 
+  // ====by rinki
+  static Future<List> GuestEventData1(String Mobile) async {
+    String url = cnst.SOAP_API_URL + 'CheckEventRegistration?Mobile=$Mobile';
+    print("Event Guest Data URL: " + url);
+    try {
+      Response response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        List list = [];
+        print("Event Guest Data URL: " + response.data.toString());
+        var memberDataClass = jsonDecode(response.data);
+        if (memberDataClass["IsSuccess"] == true &&
+            memberDataClass["IsRecord"] == true) {
+          list = memberDataClass["Data"];
+        }
+        return list;
+      } else {
+        throw Exception(MESSAGES.INTERNET_ERROR);
+      }
+    } catch (e) {
+      print("Event Guest Data URL : " + e.toString());
+      throw Exception(MESSAGES.INTERNET_ERROR);
+    }
+  }
+
+  static Future<List> GuestRegistrationForEvent(
+      String MemberId, String EventId) async {
+    String url = cnst.SOAP_API_URL +
+        'RegisterForEvent?MemberId=$MemberId&EventId=$EventId';
+    print("Event GuestRegistrationForEvent Data URL: " + url);
+    try {
+      Response response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        List list = [];
+        print("Event GuestRegistrationForEvent Data URL: " +
+            response.data.toString());
+        var memberDataClass = jsonDecode(response.data);
+        if (memberDataClass["IsSuccess"] == true &&
+            memberDataClass["IsRecord"] == true) {
+          list = memberDataClass["Data"];
+        }
+        return list;
+      } else {
+        throw Exception(MESSAGES.INTERNET_ERROR);
+      }
+    } catch (e) {
+      print("Event GuestRegistrationForEvent Data URL : " + e.toString());
+      throw Exception(MESSAGES.INTERNET_ERROR);
+    }
+  }
+
+//=================================
   static Future<List> EventCount(String EventId) async {
     String url =
         cnst.SOAP_API_URL + 'ViewScanEventMembers?type=event&eventid=$EventId';

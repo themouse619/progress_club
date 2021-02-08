@@ -159,6 +159,10 @@ class _LoginState extends State<Login> {
                 await prefs.setString(Session.Email, data["Email"].toString());
                 await prefs.setString(Session.Photo, data["Photo"].toString());
                 await prefs.setString(Session.Type, data["Type"].toString());
+                await prefs.setString(
+                    Session.cityname, data["cityname"].toString());
+                await prefs.setString(
+                    Session.statename, data["statename"].toString());
                 await prefs.setString(Session.VerificationStatus,
                     data["VerificationStatus"].toString());
                 await prefs.setString(

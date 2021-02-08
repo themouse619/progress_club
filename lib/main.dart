@@ -31,6 +31,7 @@ import 'package:progressclubsurat_new/Screens/GuestProfile.dart';
 import 'package:progressclubsurat_new/Screens/IdeaBook.dart';
 import 'package:progressclubsurat_new/Screens/IdeaBookDisplay.dart';
 import 'package:progressclubsurat_new/Screens/IdeaBookFinal.dart';
+
 //import 'package:progressclubsurat_new/Screens/IdeaBookFinal.dart';
 import 'package:progressclubsurat_new/Screens/InvitedGuestDetails.dart';
 import 'package:progressclubsurat_new/Screens/IssueBook.dart';
@@ -62,6 +63,7 @@ import 'Screens/OfficeBookingCalender.dart';
 import 'Screens/PostProperty.dart';
 import 'Screens/SaleScreen.dart';
 import 'Screens/ShowDailyProgress.dart';
+import 'Screens/ViewGuestEventTicketDetail.dart';
 
 void main() {
   initializeDateFormatting().then((_) => runApp(MyApp()));
@@ -209,6 +211,8 @@ class _MyAppState extends State<MyApp> {
         '/IdeaBookComponent': (context) => IdeaBookFinal(),
         '/IdeaBookDisplay': (context) => IdeaBookDisplay(),
         '/ScanEventGuest': (context) => ScanEventGuest(),
+        '/ViewGuestEventTicketDetail': (context) =>
+            ViewGuestEventTicketDetail(),
       },
       theme: ThemeData(
         fontFamily: 'Montserrat',

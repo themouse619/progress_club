@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:progressclubsurat_new/Common/Constants.dart' as cnst;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:flare_flutter/asset_bundle_cache.dart';
 import 'package:flare_flutter/cache.dart';
 import 'package:flare_flutter/cache_asset.dart';
 import 'package:flare_flutter/flare.dart';
@@ -19,8 +18,6 @@ import 'package:flare_flutter/flare_controls.dart';
 import 'package:flare_flutter/flare_render_box.dart';
 import 'package:flare_flutter/flare_testing.dart';
 //import 'package:flare_flutter/trim_path.dart';
-
-
 
 import 'Dashboard.dart';
 
@@ -62,19 +59,21 @@ class _SplashState extends State<Splash> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              /*Image.asset("images/logo.jpg",
-                  width: 200.0, height: 200.0, fit: BoxFit.contain),*/
+              Image.asset("images/logo.jpg",
+                  width: 200.0, height: 200.0, fit: BoxFit.contain),
 
-              Container(
-                height: 150,
-                width: 150,
-                child: FlareActor(
-                  "assets/ProgressClub.flr",
-                  alignment: Alignment.center,
-                  fit: BoxFit.contain,
-                  animation: "pcgrow",
-                ),
-              ),
+              // Container(
+              //     height: 150,
+              //     width: 150,
+              //     child:
+
+              // FlareActor(
+              //   "assets/ProgressClub.flr",
+              //   alignment: Alignment.center,
+              //   fit: BoxFit.contain,
+              //   animation: "pcgrow",
+              // ),
+              // ),
               Padding(
                 padding: EdgeInsets.only(top: 0.0),
                 child: Text(
@@ -89,7 +88,6 @@ class _SplashState extends State<Splash> {
               )
             ],
           ),
-        )
-    );
+        ));
   }
 }

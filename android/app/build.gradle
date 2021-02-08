@@ -43,8 +43,8 @@ android {
         applicationId "com.itfuturz.progressclubsurat"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 48
-        versionName '1.0.42'
+        versionCode 50
+        versionName '1.0.44'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }

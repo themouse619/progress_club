@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:progressclubsurat_new/Component/GuestEventComponent.dart';
 import 'package:progressclubsurat_new/Screens/CardShareComponent.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:barcode_scan/barcode_scan.dart';
@@ -41,6 +42,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   DateTime _selectedDay;
   Map<DateTime, List> _events;
   List _guestEvent = [];
+  List _guestEvent1 = [];
+  List<dynamic> pcDigitalList = [];
   Map<DateTime, List> _visibleEvents;
 
   List chapter = new List();
@@ -62,7 +65,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       memberPhoto = "",
       memberId = "",
       memberType = "",
+      memberMobile = "",
       chapterId = "",
+      stateName = "",
+      cityName = "",
       chapterName = "All";
   String ExpDate = "";
 
@@ -275,9 +281,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       memberCmpName = prefs.getString(Session.CompanyName);
       memberPhoto = prefs.getString(Session.Photo);
       memberType = prefs.getString(Session.Type);
+      memberMobile = prefs.getString(Session.Mobile);
+      cityName = prefs.getString(Session.cityname);
+      stateName = prefs.getString(Session.statename);
       //print(memberName);
     });
     getGuestDashboardData(memberId);
+    print("Calling");
+    getGuestEventData(memberMobile);
     var now = new DateTime.now();
     String year = now.year.toString();
     String month = '';
@@ -851,7 +862,54 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               isLoading = false;
               _guestEvent = data;
             });
+
             print(_guestEvent);
+
+            for (int i = 0; i <= data.length; i++) {
+              if (data[i]["PCName"] == "PC-DIGITAL") {
+                setState(() {
+                  pcDigitalList.add(data[i]);
+                });
+                log("===================${pcDigitalList}");
+              }
+            }
+            ;
+          } else {
+            setState(() {
+              isLoading = false;
+              _events.clear();
+            });
+            //showMsg("Try Again.");
+          }
+        }, onError: (e) {
+          print("Error : on getDashboardData $e");
+          // showMsg("Something went wrong.Please try agian.");
+          setState(() {
+            isLoading = false;
+          });
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }
+
+  getGuestEventData(String Mobile) async {
+    try {
+      //check Internet Connection
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        setState(() {
+          isLoading = true;
+        });
+        Future res = Services.GuestEventData1(Mobile);
+        res.then((data) async {
+          if (data != null && data.length > 0) {
+            setState(() {
+              isLoading = false;
+              _guestEvent1 = data;
+            });
+            print(_guestEvent1);
           } else {
             setState(() {
               isLoading = false;
@@ -1197,20 +1255,84 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       return LoadinComponent();
     } else {
       return memberType == "Guest"
-          ? Column(
-              children: [
-                Expanded(
-                  child: _guestEvent.length > 0
-                      ? ListView.builder(
-                          itemBuilder: (BuildContext context, int index) {
-                            return GuestEventListComponent(
-                                EventData: _guestEvent[index]);
-                          },
-                          itemCount: _guestEvent.length,
-                        )
-                      : Container(),
+          ? DefaultTabController(
+              length: 2,
+              initialIndex: 1,
+              child: Scaffold(
+                appBar: PreferredSize(
+                  preferredSize:
+                      Size.fromHeight(60.0), // here the desired height
+
+                  child: AppBar(
+                    automaticallyImplyLeading: false,
+                    bottom: TabBar(
+                      tabs: [
+                        Tab(
+                          child: Text(
+                            'Meetings',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            'Events',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ],
+                body: TabBarView(children: <Widget>[
+                  Column(
+                    children: [
+                      Expanded(
+                        child: _guestEvent.length > 0
+                            ? stateName == "Surat"
+                                ? ListView.builder(
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return GuestEventListComponent(
+                                          EventData: _guestEvent[index]);
+                                    },
+                                    itemCount: _guestEvent.length,
+                                  )
+                                : ListView.builder(
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return GuestEventListComponent(
+                                          EventData: pcDigitalList[index]);
+                                    },
+                                    itemCount: pcDigitalList.length,
+                                  )
+                            : Container(
+                                child: Center(child: Text("No Data Found")),
+                              ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Expanded(
+                        child: _guestEvent1.length > 0
+                            ? ListView.builder(
+                                itemBuilder: (BuildContext context, int index) {
+                                  return GuestEventComponent(
+                                      EventData: _guestEvent1[index]);
+                                },
+                                itemCount: _guestEvent1.length,
+                                // itemCount: 5,
+                              )
+                            : Container(
+                                child: Center(child: Text("No Data Found")),
+                              ),
+                      ),
+                    ],
+                  ),
+                ]),
+              ),
             )
           : Container(
               height: MediaQuery.of(context).size.height,

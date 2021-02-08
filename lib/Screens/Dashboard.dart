@@ -213,7 +213,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     Navigator.pushReplacementNamed(context, "/Login");
   }
 
-  showEventPopUp() {
+  showEventPopUp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    memberType = prefs.getString(Session.Type);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -278,8 +280,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                       color: cnst.appPrimaryMaterialColor,
                       minWidth: MediaQuery.of(context).size.width,
                       onPressed: () {
-                        Navigator.of(context).pop();
-
                         if (_eventList[0]["ScreenName"] == 'Web View') {
                           String Formurl = _eventList[0]["Url"].toString();
                           Formurl =
@@ -295,6 +295,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                   title: "${_eventList[0]["Title"]}"),
                             ),
                           );
+                        } else if (memberType == "Guest") {
+                          Navigator.of(context).pop();
                         } else {
                           Navigator.pushNamed(context, '/EventGuest');
                         }
@@ -567,6 +569,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               color: Colors.deepOrange.shade600),
         ];
       } else {
+        getEventData();
         barItems = [
           BarItem(
               text: "Home",
