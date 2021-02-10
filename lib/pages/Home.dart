@@ -1289,27 +1289,37 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   Column(
                     children: [
                       Expanded(
-                        child: _guestEvent.length > 0
-                            ? stateName == "Surat"
-                                ? ListView.builder(
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return GuestEventListComponent(
-                                          EventData: _guestEvent[index]);
-                                    },
-                                    itemCount: _guestEvent.length,
-                                  )
-                                : ListView.builder(
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return GuestEventListComponent(
-                                          EventData: pcDigitalList[index]);
-                                    },
-                                    itemCount: pcDigitalList.length,
-                                  )
-                            : Container(
-                                child: Center(child: Text("No Data Found")),
-                              ),
+                        child:
+
+                            // _guestEvent.length > 0
+                            //     ?
+                            cityName == "Surat"
+                                ? _guestEvent.length > 0
+                                    ? ListView.builder(
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return GuestEventListComponent(
+                                              EventData: _guestEvent[index]);
+                                        },
+                                        itemCount: _guestEvent.length,
+                                      )
+                                    : Container(
+                                        child: Center(
+                                            child: Text("No Data Found")),
+                                      )
+                                : pcDigitalList.length > 0
+                                    ? ListView.builder(
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return GuestEventListComponent(
+                                              EventData: pcDigitalList[index]);
+                                        },
+                                        itemCount: pcDigitalList.length,
+                                      )
+                                    : Container(
+                                        child: Center(
+                                            child: Text("No Data Found")),
+                                      ),
                       ),
                     ],
                   ),

@@ -23,6 +23,7 @@ class _AddGuestState extends State<AddGuest> {
   TextEditingController txtMobile = new TextEditingController();
   TextEditingController txtCity = new TextEditingController();
   TextEditingController txtState = new TextEditingController();
+  TextEditingController txtMobileCountry = new TextEditingController();
 
   PermissionStatus _permissionStatus = PermissionStatus.unknown;
 
@@ -55,14 +56,104 @@ class _AddGuestState extends State<AddGuest> {
             'City': temp1.trim(),
             'State': temp.trim(),
           };
+          String city, state;
+          if (dropdownValue == 'India') {
+            city = temp1.trim();
+            state = temp.trim();
+          } else {
+            city = txtCity.text;
+            state = txtState.text;
+          }
 
           Services.AddGuest(
             'insertguest',
             txtName.text.trim(),
             txtMobile.text.trim(),
             memberId,
-            temp1.trim(),
-            temp.trim(),
+            city,
+            state,
+          ).then((data) async {
+            print("data");
+            print(data);
+            setState(() {
+              isLoading = false;
+            });
+            if (data.IsSuccess == true) {
+              Fluttertoast.showToast(
+                  msg: "Guest Added Successfully",
+                  backgroundColor: Colors.green,
+                  gravity: ToastGravity.TOP,
+                  toastLength: Toast.LENGTH_SHORT);
+              _addGuestCountry();
+              Navigator.pushReplacementNamed(context, "/EventGuest");
+            } else {
+              // showMsg(data.);
+            }
+          }, onError: (e) {
+            setState(() {
+              isLoading = false;
+            });
+            showMsg("Try Again.");
+          });
+        } else {
+          showMsg("No Internet Connection.");
+        }
+      } on SocketException catch (_) {
+        showMsg("No Internet Connection.");
+      }
+    } else {
+      Fluttertoast.showToast(
+          msg: "Please Try Again",
+          backgroundColor: Colors.redAccent,
+          textColor: Colors.white,
+          gravity: ToastGravity.BOTTOM,
+          toastLength: Toast.LENGTH_SHORT);
+    }
+  }
+
+  _addGuestCountry() async {
+    print(temp);
+    print(temp1);
+    if (txtName.text != "" && txtMobile.text != "" ||
+        txtMobileCountry != "" ||
+        // txtMobile.text.length == 10 &&
+        temp1 != "Select your City" ||
+        temp != "Select your state") {
+      try {
+        final result = await InternetAddress.lookup('google.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          setState(() {
+            isLoading = true;
+          });
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          String memberId = prefs.getString(Session.MemberId);
+
+          var data = {
+            'type': 'insertguest',
+            'Name': txtName.text.trim(),
+            'MobileNo': txtMobile.text.trim(),
+            'MemberId': memberId,
+            'City': temp1.trim(),
+            'State': temp.trim(),
+          };
+          String city, state, mobile;
+          if (dropdownValue == 'India') {
+            city = temp1.trim();
+            state = temp.trim();
+            mobile = txtMobile.text;
+          } else {
+            city = txtCity.text;
+            state = txtState.text;
+            mobile = txtMobileCountry.text;
+          }
+          Services.AddGuestCountry(
+            'insertguest',
+            dropdownValue,
+            txtName.text.trim(),
+            mobile.trim(),
+            memberId,
+            city,
+            state,
           ).then((data) async {
             print("data");
             print(data);
@@ -213,6 +304,7 @@ class _AddGuestState extends State<AddGuest> {
   }
 
   // Map<String,List> frequencyOptions = stateandcities;
+  String dropdownValue = 'India';
 
   @override
   Widget build(BuildContext context) {
@@ -249,6 +341,237 @@ class _AddGuestState extends State<AddGuest> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: <Widget>[
+                    SizedBox(
+                      child: InputDecorator(
+                        decoration: new InputDecoration(
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          //labelText: "",
+                          fillColor: Colors.white,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(15.0),
+                            borderSide: new BorderSide(),
+                          ),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: dropdownValue,
+                            // icon: Icon(Icons.arrow_downward),
+                            iconSize: 24,
+                            elevation: 16,
+                            style: TextStyle(color: Colors.black),
+
+                            onChanged: (String newValue) {
+                              setState(() {
+                                dropdownValue = newValue;
+                              });
+                            },
+                            items: <String>[
+                              'Afghanistan',
+                              'Albania',
+                              'Algeria',
+                              'Andorra',
+                              'Angola',
+                              'Antigua and Barbuda	',
+                              'Argentina',
+                              'Armenia',
+                              'Australia',
+                              'Austria',
+                              'Azerbaijan',
+                              'Bahamas',
+                              'Bahrain',
+                              'Bangladesh',
+                              'Barbados',
+                              'Belarus',
+                              'Belgium',
+                              'Belize',
+                              'Benin',
+                              'Bhutan',
+                              'Bolivia',
+                              'Bosnia and Herzegovina	',
+                              'Botswana',
+                              'Brazil',
+                              'Brunei',
+                              'Bulgaria',
+                              'Burkina Faso	',
+                              'Burundi',
+                              'Côte d Ivoire',
+                              'Cabo Verde	',
+                              'Cambodia',
+                              'Cameroon',
+                              'Canada	',
+                              'Central African Republic	',
+                              'Chad',
+                              'Chile	',
+                              'China',
+                              'Colombia',
+                              'Comoros',
+                              'Congo (Congo-Brazzaville)	',
+                              'Costa Rica	',
+                              'Croatia',
+                              'Cuba',
+                              'Cyprus',
+                              'Czechia (Czech Republic)	',
+                              'Democratic Republic of the Congo	',
+                              'Denmark',
+                              'Djibouti',
+                              'Dominica',
+                              'Dominican Republic	',
+                              'Ecuador',
+                              'Egypt	',
+                              'El Salvador	',
+                              'Equatorial Guinea	',
+                              'Eritrea',
+                              'Estonia',
+                              'Eswatini (fmr. "Swaziland")	',
+                              'Ethiopia',
+                              'Fiji',
+                              'Finland',
+                              'France',
+                              'Gabon',
+                              'Gambia',
+                              'Georgia',
+                              'Germany	',
+                              'Ghana',
+                              'Greece',
+                              'Grenada',
+                              'Guatemala',
+                              'Guinea',
+                              'Guinea-Bissau	',
+                              'Guyana',
+                              'Haiti',
+                              'Holy See	',
+                              'Honduras',
+                              'Hungary',
+                              'Iceland',
+                              'India',
+                              'Indonesia',
+                              'Iran	',
+                              'Iraq	',
+                              'Ireland',
+                              'Israel',
+                              'Italy',
+                              'Jamaica',
+                              'Japan',
+                              'Jordan',
+                              'Kazakhstan	',
+                              'Kenya',
+                              'Kiribati',
+                              'Kuwait',
+                              'Kyrgyzstan',
+                              'Laos',
+                              'Latvia',
+                              'Lebanon',
+                              'Lesotho',
+                              'Liberia	',
+                              'Libya',
+                              'Liechtenstein',
+                              'Lithuania',
+                              'Luxembourg',
+                              'Madagascar',
+                              'Malawi	',
+                              'Malaysia',
+                              'Maldives	',
+                              'Mali	',
+                              'Malta',
+                              'Marshall Islands	',
+                              'Mauritania	',
+                              'Mauritius',
+                              'Mexico',
+                              'Micronesia',
+                              'Moldova',
+                              'Monaco	',
+                              'Mongolia	',
+                              'Montenegro',
+                              'Morocco',
+                              'Mozambique',
+                              'Myanmar (formerly Burma)	',
+                              'Namibia',
+                              'Nauru',
+                              'Nepal',
+                              'Netherlands',
+                              'New Zealand	',
+                              'Nicaragua	',
+                              'Niger',
+                              'Nigeria',
+                              'North Korea	',
+                              'North Macedonia	',
+                              'Norway',
+                              'Oman',
+                              'Pakistan',
+                              'Palau',
+                              'Palestine State	',
+                              'Panama',
+                              'Papua New Guinea	',
+                              'Paraguay',
+                              'Peru',
+                              'Philippines',
+                              'Poland',
+                              'Portugal',
+                              'Qatar',
+                              'Romania',
+                              'Russia',
+                              'Rwanda',
+                              'Saint Kitts and Nevis	',
+                              'Saint Lucia	',
+                              'Saint Vincent and the Grenadines	',
+                              'Samoa',
+                              'San Marino	',
+                              'Sao Tome and Principe	',
+                              'Saudi Arabia	',
+                              'Senegal',
+                              'Serbia',
+                              'Seychelles',
+                              'Sierra Leone	',
+                              'Singapore',
+                              'Slovakia',
+                              'Slovenia',
+                              'Solomon Islands	',
+                              'Somalia',
+                              'South Africa	',
+                              'South Korea	',
+                              'South Sudan	',
+                              'Spain	',
+                              'Sri Lanka	',
+                              'Sudan',
+                              'Suriname',
+                              'Sweden',
+                              'Switzerland',
+                              'Syria',
+                              'Tajikistan',
+                              'Tanzania',
+                              'Thailand',
+                              'Timor-Leste	',
+                              'Togo',
+                              'Tonga',
+                              'Trinidad and Tobago	',
+                              'Tunisia',
+                              'Turkey',
+                              'Turkmenistan',
+                              'Tuvalu',
+                              'Uganda',
+                              'Ukraine',
+                              'United Arab Emirates	',
+                              'United Kingdom	',
+                              'United States of America	',
+                              'Uruguay',
+                              'Uzbekistan',
+                              'Vanuatu',
+                              'Venezuela',
+                              'Vietnam',
+                              'Yemen',
+                              'Zambia',
+                              'Zimbabwe',
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
                     Container(
                       margin: EdgeInsets.only(bottom: 10, top: 6),
                       child: TextFormField(
@@ -268,26 +591,49 @@ class _AddGuestState extends State<AddGuest> {
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      child: TextFormField(
-                        controller: txtMobile,
-                        scrollPadding: EdgeInsets.all(0),
-                        maxLength: 10,
-                        decoration: InputDecoration(
-                            border: new OutlineInputBorder(
-                                borderSide: new BorderSide(color: Colors.black),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            prefixIcon: Icon(
-                              Icons.call,
+                    dropdownValue == 'India'
+                        ? Container(
+                            margin: EdgeInsets.only(bottom: 10),
+                            child: TextFormField(
+                              controller: txtMobile,
+                              scrollPadding: EdgeInsets.all(0),
+                              maxLength: 10,
+                              decoration: InputDecoration(
+                                  border: new OutlineInputBorder(
+                                      borderSide:
+                                          new BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                  prefixIcon: Icon(
+                                    Icons.call,
+                                  ),
+                                  counterText: "",
+                                  hintText: "Mobile Number"),
+                              keyboardType: TextInputType.number,
+                              style: TextStyle(color: Colors.black),
                             ),
-                            counterText: "",
-                            hintText: "Mobile Number"),
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
+                          )
+                        : Container(
+                            margin: EdgeInsets.only(bottom: 10),
+                            child: TextFormField(
+                              controller: txtMobileCountry,
+                              scrollPadding: EdgeInsets.all(0),
+                              // maxLength: 10,
+                              decoration: InputDecoration(
+                                  border: new OutlineInputBorder(
+                                      borderSide:
+                                          new BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                  prefixIcon: Icon(
+                                    Icons.call,
+                                  ),
+                                  counterText: "",
+                                  hintText: "Mobile Number"),
+                              keyboardType: TextInputType.text,
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
                     // Container(
                     //   margin: EdgeInsets.only(bottom: 10, top: 6),
                     //   child: TextFormField(
@@ -327,96 +673,140 @@ class _AddGuestState extends State<AddGuest> {
                     //     style: TextStyle(color: Colors.black),
                     //   ),
                     // ),
-                    SizedBox(
-                      child: InputDecorator(
-                        decoration: new InputDecoration(
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          //labelText: "",
-                          fillColor: Colors.white,
-                          border: new OutlineInputBorder(
-                            borderRadius: new BorderRadius.circular(15.0),
-                            borderSide: new BorderSide(),
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            //isDense: true,
-                            hint: new Text(temp),
-                            // value: _memberClass,
-                            onChanged: (val) {
-                              print(val);
-                              cities = [];
-                              for (int i = 0; i < stateandcities.length; i++) {
-                                if (stateandcities[i]["state"] ==
-                                    val.toString()) {
-                                  cities.add(stateandcities[i]["name"]);
-                                  cities.sort();
-                                }
-                              }
-                              print("cities");
-                              print(cities);
-                              setState(() {
-                                temp = val;
-                              });
-                            },
-                            //value: temp,
-                            items: states
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: new Text(
-                                  value,
-                                  style: new TextStyle(color: Colors.black),
+                    dropdownValue != 'India'
+                        ? Container(
+                            child: TextFormField(
+                              controller: txtState,
+                              scrollPadding: EdgeInsets.all(0),
+                              decoration: InputDecoration(
+                                  border: new OutlineInputBorder(
+                                      borderSide:
+                                          new BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                  // prefixIcon: Icon(
+                                  //   Icons.,
+                                  //   color: cnst.appPrimaryMaterialColor,
+                                  // ),
+                                  hintText: "State"),
+                              keyboardType: TextInputType.text,
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          )
+                        : SizedBox(
+                            child: InputDecorator(
+                              decoration: new InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                //labelText: "",
+                                fillColor: Colors.white,
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(15.0),
+                                  borderSide: new BorderSide(),
                                 ),
-                              );
-                            }).toList(),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  //isDense: true,
+                                  hint: new Text(temp),
+                                  // value: _memberClass,
+                                  onChanged: (val) {
+                                    print(val);
+                                    cities = [];
+                                    for (int i = 0;
+                                        i < stateandcities.length;
+                                        i++) {
+                                      if (stateandcities[i]["state"] ==
+                                          val.toString()) {
+                                        cities.add(stateandcities[i]["name"]);
+                                        cities.sort();
+                                      }
+                                    }
+                                    print("cities");
+                                    print(cities);
+                                    setState(() {
+                                      temp = val;
+                                    });
+                                  },
+                                  //value: temp,
+                                  items: states.map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: new Text(
+                                        value,
+                                        style:
+                                            new TextStyle(color: Colors.black),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+                            width: (MediaQuery.of(context).size.width - 40),
                           ),
-                        ),
-                      ),
-                      width: (MediaQuery.of(context).size.width - 40),
-                    ),
                     SizedBox(
                       height: 10,
                     ),
-                    SizedBox(
-                      child: InputDecorator(
-                        decoration: new InputDecoration(
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          //labelText: "",
-                          fillColor: Colors.white,
-                          border: new OutlineInputBorder(
-                            borderRadius: new BorderRadius.circular(15.0),
-                            borderSide: new BorderSide(),
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            //isDense: true,
-                            hint: new Text(temp1),
-                            // value: _memberClass,
-                            onChanged: (val) {
-                              setState(() {
-                                temp1 = val;
-                              });
-                            },
-                            //value: temp1,
-                            items: cities
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: new Text(
-                                  value,
-                                  style: new TextStyle(color: Colors.black),
+                    dropdownValue != 'India'
+                        ? Container(
+                            child: TextFormField(
+                              controller: txtCity,
+                              scrollPadding: EdgeInsets.all(0),
+                              decoration: InputDecoration(
+                                  border: new OutlineInputBorder(
+                                      borderSide:
+                                          new BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                  // prefixIcon: Icon(
+                                  //   Icons.,
+                                  //   color: cnst.appPrimaryMaterialColor,
+                                  // ),
+                                  hintText: "City"),
+                              keyboardType: TextInputType.text,
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          )
+                        : SizedBox(
+                            child: InputDecorator(
+                              decoration: new InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                //labelText: "",
+                                fillColor: Colors.white,
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(15.0),
+                                  borderSide: new BorderSide(),
                                 ),
-                              );
-                            }).toList(),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  //isDense: true,
+                                  hint: new Text(temp1),
+                                  // value: _memberClass,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      temp1 = val;
+                                    });
+                                  },
+                                  //value: temp1,
+                                  items: cities.map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: new Text(
+                                        value,
+                                        style:
+                                            new TextStyle(color: Colors.black),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+                            width: (MediaQuery.of(context).size.width - 40),
                           ),
-                        ),
-                      ),
-                      width: (MediaQuery.of(context).size.width - 40),
-                    ),
                     // Text(
                     //   "OR",
                     //   style: TextStyle(
@@ -467,7 +857,8 @@ class _AddGuestState extends State<AddGuest> {
                         color: cnst.appPrimaryMaterialColor,
                         minWidth: MediaQuery.of(context).size.width - 20,
                         onPressed: () {
-                          _addGuest();
+                          //_addGuest();
+                          _addGuestCountry();
                         },
                         child: Text(
                           "Submit",

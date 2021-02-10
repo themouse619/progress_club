@@ -573,6 +573,7 @@ class Services {
 
   //sign up guest
   static Future<String> guestSignUp(
+      String countryname,
       String personname,
       String mobile,
       String email,
@@ -582,7 +583,7 @@ class Services {
       String referby) async {
     // print(body.toString());
     String url =
-        'http://pmc.studyfield.com/Service.asmx/SignUp?type=guest&companyname=$companyname&personname=$personname&mobile=$mobile&email=$email&statename=$state&cityname=$city&referby=$referby';
+        'http://pmc.studyfield.com/Service.asmx/SignUp?type=guest&companyname=$companyname&personname=$personname&countryname=$countryname&mobile=$mobile&email=$email&statename=$state&cityname=$city&referby=$referby';
     print("SaveMember url : " + url);
     try {
       final response = await dio.get(url);
@@ -1850,6 +1851,83 @@ class Services {
     // String memberId = prefs.getString(Session.MemberId);
     String url = SOAP_API_URL +
         'InsertGeneralGuest?type=$type&Name=$Name&MobileNo=$MobileNo&MemberId=$MemberId&City=$City&State=$State';
+    print("InsertGeneralGuest URL: " + url);
+    try {
+      Response response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        String list = "";
+        print("InsertGeneralGuest URL: " + response.data.toString());
+        // var responseData = response.data;
+        SaveDataClass saveData =
+            new SaveDataClass(Message: 'No Data', IsSuccess: false, Data: '0');
+        var responseData = jsonDecode(response.data);
+        print("InsertGeneralGuest Response: " + responseData.toString());
+        saveData.Message = responseData["MESSAGE"].toString();
+        saveData.IsSuccess =
+            responseData["IsSuccess"].toString().toLowerCase() == "true"
+                ? true
+                : false;
+        saveData.IsRecord =
+            responseData["IsRecord"].toString().toLowerCase() == "true"
+                ? true
+                : false;
+
+        return saveData;
+        // if (responseData["IsSuccess"] == true &&
+        //     responseData["IsRecord"] == true) {
+        //   list = responseData["Data"];
+        // } else {
+        //   list = "";
+        // }
+        // return list;
+      } else {
+        throw Exception(MESSAGES.INTERNET_ERROR);
+      }
+    } catch (e) {
+      print("InsertGeneralGuest URL : " + e.toString());
+      throw Exception(MESSAGES.INTERNET_ERROR);
+    }
+    // String url = SOAP_API_URL + 'InsertGeneralGuest';
+    // print("AddGuest url : " + url);
+    // try {
+    //   final response = await dio.post(url, data: body);
+    //   if (response.statusCode == 200) {
+    //     SaveDataClass saveData = new SaveDataClass(
+    //         Message: 'No Data', IsSuccess: false, IsRecord: false, Data: null);
+    //
+    //     print("AddGuest Response: " + response.data.toString());
+    //     var responseData = response.data;
+    //
+    //     saveData.Message = responseData["Message"];
+    //     saveData.IsSuccess = responseData["IsSuccess"];
+    //     saveData.IsRecord = responseData["IsRecord"];
+    //     saveData.Data = responseData["Data"].toString();
+    //
+    //     return saveData;
+    //   } else {
+    //     print("Error AddGuest");
+    //     throw Exception(response.data.toString());
+    //   }
+    // } catch (e) {
+    //   print("Error AddGuest ${e.toString()}");
+    //   throw Exception(e.toString());
+    // }
+  }
+
+  //============by rinki
+  static Future<SaveDataClass> AddGuestCountry(
+      String type,
+      String Country,
+      String Name,
+      String MobileNo,
+      String MemberId,
+      String City,
+      String State) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String memberId = prefs.getString(Session.MemberId);
+    String url = SOAP_API_URL +
+        'InsertGeneralGuest?type=$type&Name=$Name&Country=$Country&MobileNo=$MobileNo&MemberId=$MemberId&City=$City&State=$State';
     print("InsertGeneralGuest URL: " + url);
     try {
       Response response = await dio.get(url);
