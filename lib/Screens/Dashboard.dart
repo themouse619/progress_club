@@ -45,7 +45,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   List _eventList = [];
 
   //loading var
-  bool isLoading = false;
+  bool isLoading = true;
+  bool flag = false;
+  bool popUpResponded = false;
 
   String memberName = "",
       memberCmpName = "",
@@ -210,7 +212,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     prefs.remove(cnst.Session.Photo);
     prefs.remove(cnst.Session.CompanyName);
     prefs.remove(cnst.Session.memId);
-    Navigator.pushReplacementNamed(context, "/Login");
+    Navigator.pushNamedAndRemoveUntil(context, '/Login', (route) => false);
   }
 
   showEventPopUp() async {
@@ -220,113 +222,124 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          //title: new Text("Progress Club"),
-          content: Container(
-              height: 390,
-              child: Column(
-                children: <Widget>[
-                  /*Align(
-                    alignment: Alignment.topRight,
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Icon(
-                    Icons.cancel,
-                    color: cnst.appPrimaryMaterialColor,
-                  ),
-                      )),*/
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                            child: Text(
-                          'Progress Club',
-                          style: TextStyle(fontSize: 25),
-                        )),
-                        GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Icon(
-                              Icons.cancel,
-                              size: 30,
-                            )),
-                      ],
-                    ),
-                  ),
-                  Text("New Event : ${_eventList[0]["Title"]}"),
-                  Padding(padding: EdgeInsets.only(top: 10)),
-                  _eventList[0]["Image"] != "" && _eventList[0]["Image"] != null
-                      ? FadeInImage.assetNetwork(
-                          placeholder: 'images/placeholder.png',
-                          image: "http://pmc.studyfield.com/" +
-                              _eventList[0]["Image"],
-                          height: 200,
-                          width: MediaQuery.of(context).size.width,
-                          fit: BoxFit.fill,
-                        )
-                      : Container(),
-                  Padding(padding: EdgeInsets.only(top: 6)),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.only(top: 10),
-                    height: 35,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: MaterialButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(0.0)),
+        return WillPopScope(
+          onWillPop: () {},
+          child: AlertDialog(
+            //title: new Text("Progress Club"),
+            content: Container(
+                height: 390,
+                child: Column(
+                  children: <Widget>[
+                    /*Align(
+                      alignment: Alignment.topRight,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Icon(
+                      Icons.cancel,
                       color: cnst.appPrimaryMaterialColor,
-                      minWidth: MediaQuery.of(context).size.width,
-                      onPressed: () {
-                        if (_eventList[0]["ScreenName"] == 'Web View') {
-                          String Formurl = _eventList[0]["Url"].toString();
-                          Formurl =
-                              Formurl.replaceAll('#memberId#', '$memberId');
-                          Formurl = Formurl.replaceAll(
-                              '#eventId#', '${_eventList[0]["Id"]}');
-                          print("Event Url = ${Formurl}");
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => WebViewEventForm(
-                                  url: Formurl,
-                                  title: "${_eventList[0]["Title"]}"),
-                            ),
-                          );
-                        } else if (memberType == "Guest") {
-                          Navigator.of(context).pop();
-                        } else {
-                          Navigator.pushNamed(context, '/EventGuest');
-                        }
-                      },
-                      child: Text(
-                        "${_eventList[0]["ButtonText"]}",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
+                    ),
+                        )),*/
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                              child: Text(
+                            'Progress Club',
+                            style: TextStyle(fontSize: 25),
+                          )),
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                setState(() {
+                                  popUpResponded = true;
+                                });
+                              },
+                              child: Icon(
+                                Icons.cancel,
+                                size: 30,
+                              )),
+                        ],
+                      ),
+                    ),
+                    Text("New Event : ${_eventList[0]["Title"]}"),
+                    Padding(padding: EdgeInsets.only(top: 10)),
+                    _eventList[0]["Image"] != "" &&
+                            _eventList[0]["Image"] != null
+                        ? FadeInImage.assetNetwork(
+                            placeholder: 'images/placeholder.png',
+                            image: "http://pmc.studyfield.com/" +
+                                _eventList[0]["Image"],
+                            height: 200,
+                            width: MediaQuery.of(context).size.width,
+                            fit: BoxFit.fill,
+                          )
+                        : Container(),
+                    Padding(padding: EdgeInsets.only(top: 6)),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.only(top: 10),
+                      height: 35,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: MaterialButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(0.0)),
+                        color: cnst.appPrimaryMaterialColor,
+                        minWidth: MediaQuery.of(context).size.width,
+                        onPressed: () {
+                          if (_eventList[0]["ScreenName"] == 'Web View') {
+                            String Formurl = _eventList[0]["Url"].toString();
+                            Formurl =
+                                Formurl.replaceAll('#memberId#', '$memberId');
+                            Formurl = Formurl.replaceAll(
+                                '#eventId#', '${_eventList[0]["Id"]}');
+                            print("Event Url = ${Formurl}");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => WebViewEventForm(
+                                    url: Formurl,
+                                    title: "${_eventList[0]["Title"]}"),
+                              ),
+                            );
+                          } else if (memberType == "Guest") {
+                            Navigator.of(context).pop();
+                            setState(() {
+                              popUpResponded = true;
+                              flag = true;
+                            });
+                          } else {
+                            Navigator.pushNamed(context, '/EventGuest');
+                          }
+                        },
+                        child: Text(
+                          "${_eventList[0]["ButtonText"]}",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              )),
-          /*actions: <Widget>[
-            new FlatButton(
-              child: new Text("Close",style: TextStyle(fontSize: 14,color: cnst.appPrimaryMaterialColor,fontWeight: FontWeight.w600)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            new FlatButton(
-              child: new Text("Invite Guest",style: TextStyle(fontSize: 14,color: cnst.appPrimaryMaterialColor,fontWeight: FontWeight.w600),),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushNamed(context, '/EventGuest');
-              },
-            ),
-          ],*/
+                  ],
+                )),
+            /*actions: <Widget>[
+              new FlatButton(
+                child: new Text("Close",style: TextStyle(fontSize: 14,color: cnst.appPrimaryMaterialColor,fontWeight: FontWeight.w600)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              new FlatButton(
+                child: new Text("Invite Guest",style: TextStyle(fontSize: 14,color: cnst.appPrimaryMaterialColor,fontWeight: FontWeight.w600),),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, '/EventGuest');
+                },
+              ),
+            ],*/
+          ),
         );
       },
     );
@@ -592,16 +605,10 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     NotificationPage(),
   ];
 
-  final List<Widget> _children1 = [
-    Home(),
-    NotificationPage(),
-  ];
-
-  void onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
+  // final List<Widget> _children1 = [
+  //   Home(),
+  //   NotificationPage(),
+  // ];
 
   //================= by rinki
   ShowVisitorScandailog(String id, String name) async {
@@ -1037,6 +1044,12 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _children1 = [
+      Home(
+        flag: flag,
+      ),
+      NotificationPage(),
+    ];
     double height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
@@ -1633,7 +1646,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         ),
         body: barItems.length == 4
             ? _children[_currentIndex]
-            : _children1[_currentIndex],
+            : (isLoading == false && popUpResponded == true)
+                ? _children1[_currentIndex]
+                : Container(),
         bottomNavigationBar: AnimatedBottomBar(
           barItems: barItems,
           animationDuration: Duration(milliseconds: 350),
@@ -1643,6 +1658,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                 _currentIndex = index;
               },
             );
+            print('=============${index}');
           },
         ),
       ),

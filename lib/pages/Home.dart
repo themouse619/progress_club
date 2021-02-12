@@ -23,6 +23,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
+  bool flag;
+  Home({this.flag});
   @override
   _HomeState createState() => _HomeState();
 }
@@ -101,6 +103,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    print('--------------------------------------${widget.flag}');
     dbHelper = DBHelper();
     super.initState();
     _events = {};
@@ -1257,7 +1260,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       return memberType == "Guest"
           ? DefaultTabController(
               length: 2,
-              initialIndex: 1,
+              initialIndex: widget.flag == true ? 1 : 0,
               child: Scaffold(
                 appBar: PreferredSize(
                   preferredSize:
