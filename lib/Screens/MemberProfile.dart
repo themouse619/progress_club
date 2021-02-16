@@ -178,6 +178,7 @@ class _MemberProfileState extends State<MemberProfile> {
             setState(() {
               list = data;
               setData(list);
+              getMemberWebsite();
               getTestimonialDataFromServer();
               getProffesionFromServer();
             });
@@ -324,7 +325,6 @@ class _MemberProfileState extends State<MemberProfile> {
       edtBusinessAddress.text = list[0]["OfficeAddress"];
       edtBusinessAbout.text = list[0]["BussinessAbout"];
       edtkeywords.text = list[0]["Keyword"];
-      edtWebsite.text = list[0]["Website"];
       edtEmail.text = list[0]["Email"];
 
       //Business Info
@@ -388,6 +388,30 @@ class _MemberProfileState extends State<MemberProfile> {
         spouseDob = list[0]["WDOB"].toString().substring(0, 10);
       }*/
     });
+  }
+
+  getMemberWebsite() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        String mobileNo;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        mobileNo = prefs.getString(Session.Mobile);
+        Future res = Services.MemberLogin(mobileNo);
+        res.then((data) async {
+          if (data != null && data.length > 0) {
+            edtWebsite.text=data["website"].toString();
+          } else {
+          }
+        }, onError: (e) {
+          showMsg("Something went wrong to fetch website details. Please try agian.");
+        });
+      } else {
+        showMsg("No Internet Connection.");
+      }
+    } on SocketException catch (ex) {
+      showMsg(ex.message);
+    }
   }
 
   //send Personal Info to server
@@ -532,9 +556,67 @@ class _MemberProfileState extends State<MemberProfile> {
 
   //=====================by yash
 
+  // sendBusinessWebAndEmail() async {
+  //   try {
+  //     //check Internet Connection
+  //     final result = await InternetAddress.lookup('google.com');
+  //     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+  //       setState(() {
+  //         isBusinessLoading = true;
+  //       });
+  //       SharedPreferences prefs = await SharedPreferences.getInstance();
+  //       String memberId = prefs.getString(Session.MemberId);
+  //       String deviceType = '';
+  //       if (Platform.isAndroid == true) {
+  //         setState(() {
+  //           deviceType = 'Android';
+  //         });
+  //       } else {
+  //         setState(() {
+  //           deviceType = 'Apple';
+  //         });
+  //       }
+  //       var data = {
+  //         'type': "update",
+  //         'website': edtWebsite.text,
+  //         'email': edtEmail.text,
+  //         'memberid': memberId,
+  //         'deviceType': deviceType
+  //       };
+  //
+  //       Services.sendBusinessWebAndEmail(data).then((data) async {
+  //         setState(() {
+  //           isBusinessLoading = false;
+  //         });
+  //         if (data.Data != "0" && data.Data != "") {
+  //           //signUpDone("Assignment Task Update Successfully.");
+  //           // await prefs.setString(Session.Name, edtName.text);
+  //           // await prefs.setString(Session.CompanyName, edtCmpName.text);
+  //           showHHMsg("Data Updated Successfully");
+  //         } else {
+  //           setState(() {
+  //             isBusinessLoading = false;
+  //           });
+  //         }
+  //       }, onError: (e) {
+  //         setState(() {
+  //           isBusinessLoading = false;
+  //         });
+  //         showMsg("Try Again.");
+  //       });
+  //     } else {
+  //       setState(() {
+  //         isBusinessLoading = false;
+  //       });
+  //       showMsg("No Internet Connection.");
+  //     }
+  //   } on SocketException catch (_) {
+  //     showMsg("No Internet Connection.");
+  //   }
+  // }
+
   sendBusinessWebAndEmail() async {
     try {
-      //check Internet Connection
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         setState(() {
@@ -543,6 +625,9 @@ class _MemberProfileState extends State<MemberProfile> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String memberId = prefs.getString(Session.MemberId);
         String deviceType = '';
+        String website=edtWebsite.text;
+
+        String email=edtEmail.text;
         if (Platform.isAndroid == true) {
           setState(() {
             deviceType = 'Android';
@@ -552,27 +637,20 @@ class _MemberProfileState extends State<MemberProfile> {
             deviceType = 'Apple';
           });
         }
-        var data = {
-          'type': "update",
-          'website': edtWebsite.text,
-          'email': edtEmail.text,
-          'memberid': memberId,
-          'deviceType': deviceType
-        };
-
-        Services.sendBusinessWebAndEmail(data).then((data) async {
+        Future res = Services.sendBusinessWebAndEmail(website,email,memberId,deviceType);
+        print('======ss========ss======${res}');
+        res.then((data) async {
           setState(() {
             isBusinessLoading = false;
           });
-          if (data.Data != "0" && data != "") {
-            //signUpDone("Assignment Task Update Successfully.");
-            // await prefs.setString(Session.Name, edtName.text);
-            // await prefs.setString(Session.CompanyName, edtCmpName.text);
-            showHHMsg("Data Updated Successfully");
+          print("=======ss=====${data}");
+          if (data == "1") {
+            // showHHMsg("Data Updated Successfully");
           } else {
             setState(() {
               isBusinessLoading = false;
             });
+            showMsg("No Internet Connection.");
           }
         }, onError: (e) {
           setState(() {
@@ -580,7 +658,7 @@ class _MemberProfileState extends State<MemberProfile> {
           });
           showMsg("Try Again.");
         });
-      } else {
+      }else {
         setState(() {
           isBusinessLoading = false;
         });

@@ -1127,66 +1127,64 @@ class Services {
     }
   }
 
-  static Future<SaveDataClass> sendBusinessWebAndEmail(body) async {
-    print(body.toString());
-    String url = SOAP_API_URL + 'UpdateMember';
-    print("UpdateMemberWebAndEmail url : " + url);
-    try {
-      final response = await dio.post(url, data: body);
-      if (response.statusCode == 200) {
-        SaveDataClass saveData = new SaveDataClass(
-            Message: 'No Data', IsSuccess: false, IsRecord: false, Data: null);
-
-        print("UpdateMemberWebAndEmail Response: " + response.data.toString());
-        var memberDataClass = response.data;
-
-        saveData.Message = memberDataClass["Message"];
-        saveData.IsSuccess = memberDataClass["IsSuccess"];
-        saveData.IsRecord = memberDataClass["IsRecord"];
-        saveData.Data = memberDataClass["Data"].toString();
-
-        return saveData;
-      } else {
-        print("UpdateMemberWebAndEmail Url");
-        throw Exception(response.data.toString());
-      }
-    } catch (e) {
-      print("UpdateMemberWebAndEmail Error ${e.toString()}");
-      throw Exception(e.toString());
-    }
-  }
-
-  // static Future<List> sendBusinessWebAndEmail(
-  //     String website, String email, String memberid, String deviceType) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //
-  //   String memberId = prefs.getString(Session.MemberId);
-  //
+  // static Future<SaveDataClass> sendBusinessWebAndEmail(body) async {
+  //   print(body.toString());
   //   String url = SOAP_API_URL + 'UpdateMember';
-  //   print("GetMeetingPendingAssignment URL: " + url);
+  //   print("UpdateMemberWebAndEmail url : " + url);
   //   try {
-  //     Response response = await dio.get(url);
-  //
+  //     final response = await dio.post(url, data: body);
   //     if (response.statusCode == 200) {
-  //       List list = [];
-  //       print("GetMeetingPendingAssignment URL: " + response.data.toString());
+  //       SaveDataClass saveData = new SaveDataClass(
+  //           Message: 'No Data', IsSuccess: false, IsRecord: false, Data: null);
+  //
+  //       print("UpdateMemberWebAndEmail Response: " + response.data.toString());
   //       var memberDataClass = response.data;
-  //       if (memberDataClass["IsSuccess"] == true &&
-  //           memberDataClass["IsRecord"] == true) {
-  //         print(memberDataClass["Data"]);
-  //         list = memberDataClass["Data"];
-  //       } else {
-  //         list = [];
-  //       }
-  //       return list;
+  //
+  //       saveData.Message = memberDataClass["Message"];
+  //       saveData.IsSuccess = memberDataClass["IsSuccess"];
+  //       saveData.IsRecord = memberDataClass["IsRecord"];
+  //       saveData.Data = memberDataClass["Data"].toString();
+  //
+  //       return saveData;
   //     } else {
-  //       throw Exception(MESSAGES.INTERNET_ERROR);
+  //       print("UpdateMemberWebAndEmail Url");
+  //       throw Exception(response.data.toString());
   //     }
   //   } catch (e) {
-  //     print("GetMeetingPendingAssignment URL : " + e.toString());
-  //     throw Exception(MESSAGES.INTERNET_ERROR);
+  //     print("UpdateMemberWebAndEmail Error ${e.toString()}");
+  //     throw Exception(e.toString());
   //   }
   // }
+
+  static Future<String> sendBusinessWebAndEmail(
+      String website, String email, String memberid, String deviceType) async {
+    String url = SOAP_API_URL + 'UpdateMember?type=update&website=$website&email=$email&memberid=$memberid&deviceType=$deviceType';
+    print("sendBusinessWebAndEmail URL: " + url);
+    try {
+      Response response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        String dataRes;
+        print("sendBusinessWebAndEmail response: " + response.data.toString());
+        var memberDataClass = json.decode(response.data);
+        print('=======sss========${memberDataClass.runtimeType}');
+        print('=======sss========${memberDataClass["IsRecord"].runtimeType}');
+        if (memberDataClass["IsSuccess"] == false &&
+            memberDataClass["IsRecord"] == false) {
+          dataRes = memberDataClass["Data"].toString();
+          print('=======ss=======${dataRes}');
+        } else {
+          dataRes = '';
+        }
+        return dataRes;
+      } else {
+        throw Exception(MESSAGES.INTERNET_ERROR);
+      }
+    } catch (e) {
+      print("sendBusinessWebAndEmail error : " + e.toString());
+      throw Exception(MESSAGES.INTERNET_ERROR);
+    }
+  }
 
   /*static Future<SaveDataClass> UploadMemberImage(body) async {
     print(body.toString());
