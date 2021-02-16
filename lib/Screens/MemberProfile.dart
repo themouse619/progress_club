@@ -181,6 +181,7 @@ class _MemberProfileState extends State<MemberProfile> {
               getTestimonialDataFromServer();
               getProffesionFromServer();
             });
+            print('==================list${list}');
           } else {
             setState(() {
               isLoading = false;
@@ -323,8 +324,8 @@ class _MemberProfileState extends State<MemberProfile> {
       edtBusinessAddress.text = list[0]["OfficeAddress"];
       edtBusinessAbout.text = list[0]["BussinessAbout"];
       edtkeywords.text = list[0]["Keyword"];
-      edtWebsite.text = "";
-      edtEmail.text = "";
+      edtWebsite.text = list[0]["Website"];
+      edtEmail.text = list[0]["Email"];
 
       //Business Info
       edtTestimonial.text = list[0]["Testimonial"];
@@ -489,8 +490,8 @@ class _MemberProfileState extends State<MemberProfile> {
           'BussinessxAbout': edtBusinessAbout.text,
           'OfficeAddress': edtBusinessAddress.text,
           'Keyword': edtkeywords.text,
-          'Website': edtWebsite.text,
-          'Email': edtEmail.text,
+          // 'Website': edtWebsite.text,
+          // 'Email': edtEmail.text,
         };
 
         Services.sendBusinessMemberDetails(data).then((data) async {
@@ -507,6 +508,67 @@ class _MemberProfileState extends State<MemberProfile> {
               edtBusinessCategory.text =
                   __professionClass == null ? "" : __professionClass.Profession;
             });
+          } else {
+            setState(() {
+              isBusinessLoading = false;
+            });
+          }
+        }, onError: (e) {
+          setState(() {
+            isBusinessLoading = false;
+          });
+          showMsg("Try Again.");
+        });
+      } else {
+        setState(() {
+          isBusinessLoading = false;
+        });
+        showMsg("No Internet Connection.");
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }
+
+  //=====================by yash
+
+  sendBusinessWebAndEmail() async {
+    try {
+      //check Internet Connection
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        setState(() {
+          isBusinessLoading = true;
+        });
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String memberId = prefs.getString(Session.MemberId);
+        String deviceType = '';
+        if (Platform.isAndroid == true) {
+          setState(() {
+            deviceType = 'Android';
+          });
+        } else {
+          setState(() {
+            deviceType = 'Apple';
+          });
+        }
+        var data = {
+          'type': "update",
+          'website': edtWebsite.text,
+          'email': edtEmail.text,
+          'memberid': memberId,
+          'deviceType': deviceType
+        };
+
+        Services.sendBusinessWebAndEmail(data).then((data) async {
+          setState(() {
+            isBusinessLoading = false;
+          });
+          if (data.Data != "0" && data != "") {
+            //signUpDone("Assignment Task Update Successfully.");
+            // await prefs.setString(Session.Name, edtName.text);
+            // await prefs.setString(Session.CompanyName, edtCmpName.text);
+            showHHMsg("Data Updated Successfully");
           } else {
             setState(() {
               isBusinessLoading = false;
@@ -1727,6 +1789,7 @@ class _MemberProfileState extends State<MemberProfile> {
                                                               setState(() {
                                                                 if (isBusinessEditable) {
                                                                   sendBusinessInfo();
+                                                                  sendBusinessWebAndEmail();
                                                                 } else {
                                                                   isBusinessEditable =
                                                                       true;

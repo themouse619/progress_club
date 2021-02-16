@@ -47,6 +47,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   //loading var
   bool isLoading = true;
   bool flag = false;
+  bool noPopUpData = false;
   bool popUpResponded = false;
 
   String memberName = "",
@@ -131,6 +132,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           } else {
             setState(() {
               isLoading = false;
+              noPopUpData = true;
             });
           }
         }, onError: (e) {
@@ -1047,6 +1049,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     final List<Widget> _children1 = [
       Home(
         flag: flag,
+        noPopUpData: noPopUpData,
       ),
       NotificationPage(),
     ];
@@ -1646,9 +1649,15 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         ),
         body: barItems.length == 4
             ? _children[_currentIndex]
-            : (isLoading == false && popUpResponded == true)
+            : (isLoading == false &&
+                    popUpResponded == true &&
+                    noPopUpData == false)
                 ? _children1[_currentIndex]
-                : Container(),
+                : (isLoading == false &&
+                        popUpResponded == false &&
+                        noPopUpData == true)
+                    ? _children1[_currentIndex]
+                    : Container(),
         bottomNavigationBar: AnimatedBottomBar(
           barItems: barItems,
           animationDuration: Duration(milliseconds: 350),

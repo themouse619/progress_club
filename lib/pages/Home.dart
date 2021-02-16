@@ -24,7 +24,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
   bool flag;
-  Home({this.flag});
+  bool noPopUpData;
+  Home({this.flag, this.noPopUpData});
   @override
   _HomeState createState() => _HomeState();
 }
@@ -311,7 +312,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     edate = DateTime(now.year + 1, 12, 31).toString().substring(0, 10);
     print("s data: ${sdate}");
     print("e data: ${edate}");
-    //getDashboardData(chapterId == "null" ? "0" : chapterId, sdate, edate);
   }
 
   getData() {
@@ -804,7 +804,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       //check Internet Connection
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('sssssssssssss${chapterId}');
+        print('Chapter ID=============>${chapterId}');
         setState(() {
           isLoading = true;
         });
@@ -1260,7 +1260,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       return memberType == "Guest"
           ? DefaultTabController(
               length: 2,
-              initialIndex: widget.flag == true ? 1 : 0,
+              initialIndex: (widget.noPopUpData == true && widget.flag == false)
+                  ? 0
+                  : (widget.flag == true && widget.noPopUpData == false)
+                      ? 1
+                      : 0,
               child: Scaffold(
                 appBar: PreferredSize(
                   preferredSize:
@@ -1433,122 +1437,131 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                settings[0]["ScanVisitor"].toString() != ""
-                                    ? Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 8, right: 8),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            GestureDetector(
+                            settings.length > 0
+                                ? Row(
+                                    children: <Widget>[
+                                      settings[0]["ScanVisitor"].toString() !=
+                                              ""
+                                          ? Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8, right: 8),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: <Widget>[
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      scanVisitor();
+                                                    },
+                                                    child: Container(
+                                                        width: 50,
+                                                        height: 40,
+                                                        decoration: BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            30)),
+                                                            color:
+                                                                cnst.appPrimaryMaterialColor[
+                                                                    100]),
+                                                        child: Center(
+                                                            child: Image.asset(
+                                                          'images/icon_scanner.png',
+                                                          width: 32,
+                                                          height: 30,
+                                                          color: cnst
+                                                              .appPrimaryMaterialColor,
+                                                        ))),
+                                                  ),
+                                                  Text(
+                                                    "Scan Visitor",
+                                                    style: TextStyle(
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          : Container(),
+                                      settings[0]["SearchVisitor"].toString() !=
+                                              "0"
+                                          ? GestureDetector(
                                               onTap: () {
-                                                scanVisitor();
+                                                _addvisitorMobilenumberinput(
+                                                    context);
                                               },
-                                              child: Container(
-                                                  width: 50,
-                                                  height: 40,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  30)),
-                                                      color:
-                                                          cnst.appPrimaryMaterialColor[
-                                                              100]),
-                                                  child: Center(
-                                                      child: Image.asset(
-                                                    'images/icon_scanner.png',
-                                                    width: 32,
-                                                    height: 30,
-                                                    color: cnst
-                                                        .appPrimaryMaterialColor,
-                                                  ))),
-                                            ),
-                                            Text(
-                                              "Scan Visitor",
-                                              style: TextStyle(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w600),
+                                              child: Column(
+                                                children: <Widget>[
+                                                  Container(
+                                                      width: 50,
+                                                      height: 42,
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          30)),
+                                                          color:
+                                                              cnst.appPrimaryMaterialColor[
+                                                                  100]),
+                                                      child: Center(
+                                                          child: Icon(
+                                                        Icons.search,
+                                                        size: 27,
+                                                        color: cnst
+                                                            .appPrimaryMaterialColor,
+                                                      ))),
+                                                  Text(
+                                                    "Search Visitor",
+                                                    style: TextStyle(
+                                                        fontSize: 11,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  )
+                                                ],
+                                              ),
                                             )
-                                          ],
-                                        ),
-                                      )
-                                    : Container(),
-                                settings[0]["SearchVisitor"].toString() != "0"
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          _addvisitorMobilenumberinput(context);
-                                        },
-                                        child: Column(
-                                          children: <Widget>[
-                                            Container(
-                                                width: 50,
-                                                height: 42,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                30)),
-                                                    color:
-                                                        cnst.appPrimaryMaterialColor[
-                                                            100]),
-                                                child: Center(
-                                                    child: Icon(
-                                                  Icons.search,
-                                                  size: 27,
-                                                  color: cnst
-                                                      .appPrimaryMaterialColor,
-                                                ))),
-                                            Text(
-                                              "Search Visitor",
-                                              style: TextStyle(
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.w600),
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    : Container(),
-                                // GestureDetector(
-                                //   onTap: () {
-                                //     Navigator.pushNamed(
-                                //         context, '/AddInvitedGuest');
-                                //     //add new guest
-                                //   },
-                                //   child: Padding(
-                                //     padding: const EdgeInsets.only(left: 8),
-                                //     child: Column(
-                                //       children: <Widget>[
-                                //         Container(
-                                //             width: 37,
-                                //             height: 28,
-                                //             decoration: BoxDecoration(
-                                //                 borderRadius: BorderRadius.all(
-                                //                     Radius.circular(30)),
-                                //                 color:
-                                //                 cnst.appPrimaryMaterialColor[
-                                //                 100]),
-                                //             child: Center(
-                                //                 child: Icon(
-                                //                   Icons.person_add,
-                                //                   size: 30,
-                                //                   color: cnst.appPrimaryMaterialColor,
-                                //                 ))),
-                                //         Text(
-                                //           "Add Guest",
-                                //           style: TextStyle(
-                                //               fontSize: 11,
-                                //               fontWeight: FontWeight.w600),
-                                //         )
-                                //       ],
-                                //     ),
-                                //   ),
-                                // )
-                              ],
-                            ),
+                                          : Container(),
+                                      // GestureDetector(
+                                      //   onTap: () {
+                                      //     Navigator.pushNamed(
+                                      //         context, '/AddInvitedGuest');
+                                      //     //add new guest
+                                      //   },
+                                      //   child: Padding(
+                                      //     padding: const EdgeInsets.only(left: 8),
+                                      //     child: Column(
+                                      //       children: <Widget>[
+                                      //         Container(
+                                      //             width: 37,
+                                      //             height: 28,
+                                      //             decoration: BoxDecoration(
+                                      //                 borderRadius: BorderRadius.all(
+                                      //                     Radius.circular(30)),
+                                      //                 color:
+                                      //                 cnst.appPrimaryMaterialColor[
+                                      //                 100]),
+                                      //             child: Center(
+                                      //                 child: Icon(
+                                      //                   Icons.person_add,
+                                      //                   size: 30,
+                                      //                   color: cnst.appPrimaryMaterialColor,
+                                      //                 ))),
+                                      //         Text(
+                                      //           "Add Guest",
+                                      //           style: TextStyle(
+                                      //               fontSize: 11,
+                                      //               fontWeight: FontWeight.w600),
+                                      //         )
+                                      //       ],
+                                      //     ),
+                                      //   ),
+                                      // )
+                                    ],
+                                  )
+                                : Container(),
                             Align(
                               alignment: Alignment.bottomRight,
                               child: Padding(
