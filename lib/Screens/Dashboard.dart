@@ -374,7 +374,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               // getProffesionFromServer();
             });
             print("sssssssssssssssss" + list[0].toString());
-            double proPer = 1.0;
+            double proPer = 1.2;
             list[0].forEach((key, value) {
               if ((key == "Name") ||
                   (key == "DateOfBirth") ||
@@ -386,21 +386,22 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   (key == "WDOB") ||
                   (key == "NoOfChildren") ||
                   (key == "CompanyName") ||
-                  (key == "Category") ||
+                  (key == "ProffesionId") ||
                   (key == "OfficeAddress") ||
                   (key == "BussinessAbout") ||
                   (key == "Keyword") ||
+                  (key == "Email") ||
                   (key == "Achivement") ||
                   (key == "ExpOfWork") ||
                   (key == "AskForPeople") ||
                   (key == "Introducer")) {
-                if (value != "" && value != null) {
-                  proPer = proPer + 5.5;
+                if (value != null && value != '') {
+                  proPer = proPer + 5.2;
                 }
               }
             });
 
-            showProfileCompletionPopUp(proPer);
+            showProfileCompletionPopUp(proPer.roundToDouble());
             print("nnnnnnnnnnnnnnnnnnnnnnnnn" + proPer.toString());
           } else {
             setState(() {

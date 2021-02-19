@@ -323,7 +323,8 @@ class _MemberProfileState extends State<MemberProfile> {
       //Business Info
       edtCmpName.text = list[0]["CompanyName"];
       edtBusinessAddress.text = list[0]["OfficeAddress"];
-      edtBusinessAbout.text = list[0]["BussinessAbout"];
+      edtBusinessAbout.text =
+          list[0]["BussinessAbout"] == null ? '-' : list[0]["BussinessAbout"];
       edtkeywords.text = list[0]["Keyword"];
       edtEmail.text = list[0]["Email"];
 
@@ -400,11 +401,11 @@ class _MemberProfileState extends State<MemberProfile> {
         Future res = Services.MemberLogin(mobileNo);
         res.then((data) async {
           if (data != null && data.length > 0) {
-            edtWebsite.text=data["website"].toString();
-          } else {
-          }
+            edtWebsite.text = data["website"].toString();
+          } else {}
         }, onError: (e) {
-          showMsg("Something went wrong to fetch website details. Please try agian.");
+          showMsg(
+              "Something went wrong to fetch website details. Please try agian.");
         });
       } else {
         showMsg("No Internet Connection.");
@@ -502,10 +503,7 @@ class _MemberProfileState extends State<MemberProfile> {
           isBusinessLoading = true;
         });
         SharedPreferences prefs = await SharedPreferences.getInstance();
-
         String memberId = prefs.getString(Session.MemberId);
-        var now = new DateTime.now();
-
         var data = {
           'Id': memberId,
           'CompanyName': edtCmpName.text,
@@ -625,9 +623,9 @@ class _MemberProfileState extends State<MemberProfile> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String memberId = prefs.getString(Session.MemberId);
         String deviceType = '';
-        String website=edtWebsite.text;
+        String website = edtWebsite.text;
 
-        String email=edtEmail.text;
+        String email = edtEmail.text;
         if (Platform.isAndroid == true) {
           setState(() {
             deviceType = 'Android';
@@ -637,7 +635,8 @@ class _MemberProfileState extends State<MemberProfile> {
             deviceType = 'Apple';
           });
         }
-        Future res = Services.sendBusinessWebAndEmail(website,email,memberId,deviceType);
+        Future res = Services.sendBusinessWebAndEmail(
+            website, email, memberId, deviceType);
         print('======ss========ss======${res}');
         res.then((data) async {
           setState(() {
@@ -658,7 +657,7 @@ class _MemberProfileState extends State<MemberProfile> {
           });
           showMsg("Try Again.");
         });
-      }else {
+      } else {
         setState(() {
           isBusinessLoading = false;
         });

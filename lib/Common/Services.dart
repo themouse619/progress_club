@@ -1072,14 +1072,15 @@ class Services {
   static Future<SaveDataClass> sendBusinessMemberDetails(body) async {
     print(body.toString());
     String url = API_URL + 'UpdateProfileBusiness';
-    print("UpdateProfilePersonal url : " + url);
+    print("sendBusinessMemberDetails url : " + url);
     try {
       final response = await dio.post(url, data: body);
       if (response.statusCode == 200) {
         SaveDataClass saveData = new SaveDataClass(
             Message: 'No Data', IsSuccess: false, IsRecord: false, Data: null);
 
-        print("UpdateProfilePersonal Response: " + response.data.toString());
+        print(
+            "sendBusinessMemberDetails Response: " + response.data.toString());
         var memberDataClass = response.data;
 
         saveData.Message = memberDataClass["Message"];
@@ -1089,7 +1090,7 @@ class Services {
 
         return saveData;
       } else {
-        print("UpdateProfilePersonal Url");
+        print("sendBusinessMemberDetails Url");
         throw Exception(response.data.toString());
       }
     } catch (e) {
@@ -1127,38 +1128,10 @@ class Services {
     }
   }
 
-  // static Future<SaveDataClass> sendBusinessWebAndEmail(body) async {
-  //   print(body.toString());
-  //   String url = SOAP_API_URL + 'UpdateMember';
-  //   print("UpdateMemberWebAndEmail url : " + url);
-  //   try {
-  //     final response = await dio.post(url, data: body);
-  //     if (response.statusCode == 200) {
-  //       SaveDataClass saveData = new SaveDataClass(
-  //           Message: 'No Data', IsSuccess: false, IsRecord: false, Data: null);
-  //
-  //       print("UpdateMemberWebAndEmail Response: " + response.data.toString());
-  //       var memberDataClass = response.data;
-  //
-  //       saveData.Message = memberDataClass["Message"];
-  //       saveData.IsSuccess = memberDataClass["IsSuccess"];
-  //       saveData.IsRecord = memberDataClass["IsRecord"];
-  //       saveData.Data = memberDataClass["Data"].toString();
-  //
-  //       return saveData;
-  //     } else {
-  //       print("UpdateMemberWebAndEmail Url");
-  //       throw Exception(response.data.toString());
-  //     }
-  //   } catch (e) {
-  //     print("UpdateMemberWebAndEmail Error ${e.toString()}");
-  //     throw Exception(e.toString());
-  //   }
-  // }
-
   static Future<String> sendBusinessWebAndEmail(
       String website, String email, String memberid, String deviceType) async {
-    String url = SOAP_API_URL + 'UpdateMember?type=update&website=$website&email=$email&memberid=$memberid&deviceType=$deviceType';
+    String url = SOAP_API_URL +
+        'UpdateMember?type=update&website=$website&email=$email&memberid=$memberid&deviceType=$deviceType';
     print("sendBusinessWebAndEmail URL: " + url);
     try {
       Response response = await dio.get(url);
